@@ -165,7 +165,7 @@ function wav(root,sc,bpm){const sr=22050,d=24,n=sr*d,st=60/bpm/2,p=new Int16Arra
  const b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,s)=>[...s].forEach((c,j)=>v.setUint8(o+j,c.charCodeAt(0)));w(0,"RIFF");v.setUint32(4,36+n*2,true);w(8,"WAVEfmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,"data");v.setUint32(40,n*2,true);new Int16Array(b,44).set(p);return URL.createObjectURL(new Blob([b],{type:"audio/wav"}))}
 function demos(){[["Amanecer en el valle",196,[0,2,4,7,9,12],84],["Lluvia de neón",220,[0,3,5,7,10,12],104]].forEach(d=>{const t={id:"x"+d[0],title:d[0],artist:"Demo sintético (no es un artista real)",src:wav(d[1],d[2],d[3])};T[t.id]=t;if(!S.loc.some(x=>x.id==t.id))S.loc.push(t)});show("lib")}
 /* ---------- Eventos ---------- */
-document.addEventListener("click",e=>{  if(e.target.id=="ytplay"){   const raw=$("#yturl").value.trim();   let id="";   try{    const u=new URL(raw);    if(u.hostname=="youtu.be")id=u.pathname.slice(1).split("/")[0];    else if(u.hostname.endsWith("youtube.com"))id=u.searchParams.get("v")||(u.pathname.startsWith("/embed/")?u.pathname.split("/")[2]:"");   }catch{}   if(!/^[A-Za-z0-9_-]{11}$/.test(id)){    toast("Pega un enlace válido de YouTube");    return;   }   $("#ytbox").innerHTML=`<div style="position:relative;width:100%;aspect-ratio:16/9;margin-top:16px"><iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1" title="Reproductor de YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;inset:0;border:0;border-radius:12px"></iframe></div>`;  }
+document.addEventListener("click",e=>{  
  if(e.target.id=="bcplay"){
   const raw=$("#bcurl").value.trim();
   try{
@@ -187,7 +187,7 @@ document.addEventListener("click",e=>{  if(e.target.id=="ytplay"){   const raw=$
    else if(u.hostname.endsWith("youtube.com"))id=u.searchParams.get("v")||(u.pathname.startsWith("/embed/")?u.pathname.split("/")[2]:"");
   }catch{}
   if(!/^[A-Za-z0-9_-]{11}$/.test(id)){
-   toast("Pega un enlace válido de YouTube");
+   toast("Pega un enlace válido de Bandcamp");
    return;
   }
   $("#ytbox").innerHTML=`<div style="position:relative;width:100%;aspect-ratio:16/9;margin-top:16px"><iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1" title="Reproductor de YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;inset:0;border:0;border-radius:12px"></iframe></div>`;
