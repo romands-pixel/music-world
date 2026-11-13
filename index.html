@@ -130,7 +130,7 @@ async function show(v,arg){
   (S.pl.length?S.pl.map((p,i)=>`<div class="row" style="align-items:center"><b>${esc(p.n)}</b><span class="empty">${p.t.length} canciones</span><button class="btn alt" data-ppl="${i}">▶</button><button class="btn alt" data-dpl="${i}">Eliminar</button></div>`+(p.t.length?rows(p.t):"")).join(""):'<div class="empty">Crea tu primera playlist.</div>')+
   sec("Artistas que sigo",S.fol.length?cards(S.fol.map(x=>({id:x.id,name:x.name,picture_medium:x.pic})),"artist"):'<div class="empty">Aún no sigues a nadie.</div>')+
   sec("Mis álbumes",S.alb.length?cards(S.alb.map(x=>({id:x.id,title:x.title,cover_medium:x.cover})),"album"):'<div class="empty">Guarda álbumes desde su página.</div>')+sec("Historial",rows(S.his));
- }else if(v=="youtube"){   h=`<h2>Reproducir música desde YouTube</h2>   <p class="empty">Pega el enlace de una canción de YouTube.</p>   <div class="row">     <input id="yturl" placeholder="Pega aquí el enlace de YouTube" style="width:min(400px,100%)">     <button class="btn" id="ytplay">Reproducir</button>   </div>   <div id="ytbox"></div>`;  }else if(v=="youtube"){   h=`<h2>YouTube Music</h2>   <p class="empty">Busca una canción y reprodúcela aquí.</p>   <input id="yturl" placeholder="Pega el enlace de YouTube">   <button class="btn" id="ytplay">Reproducir</button>   <div id="ytbox"></div>`;  }else if(v=="queue"){
+ }else if(v=="youtube"){   h=`<h2>Bandcamp Music</h2>   <p class="empty">Pega el enlace de un álbum o canción de Bandcamp.</p>   <input id="bcurl" placeholder="Pega aquí el enlace de Bandcamp">   <button class="btn" id="bcplay">Reproducir</button>   <div id="bcbox"></div>`;  }else if(v=="queue"){   h=`<h2>Reproducir música desde YouTube</h2>   <p class="empty">Pega el enlace de una canción de YouTube.</p>   <div class="row">     <input id="yturl" placeholder="Pega aquí el enlace de YouTube" style="width:min(400px,100%)">     <button class="btn" id="ytplay">Reproducir</button>   </div>   <div id="ytbox"></div>`;  }else if(v=="youtube"){   h=`<h2>YouTube Music</h2>   <p class="empty">Busca una canción y reprodúcela aquí.</p>   <input id="yturl" placeholder="Pega el enlace de YouTube">   <button class="btn" id="ytplay">Reproducir</button>   <div id="ytbox"></div>`;  }else if(v=="queue"){
   h=sec("Cola de reproducción",S.q.length?S.q.map((t,i)=>`<div class="tr ${i==S.qi?"on":""}" data-qj="${i}"><img src="${esc(t.cover||PH)}" alt=""><div class="m"><b>${esc(t.title)}</b><span>${esc(t.artist)}</span></div><button data-qx="${i}" aria-label="Quitar">✕</button><span></span><span></span></div>`).join(""):'<div class="empty">La cola está vacía.</div>');
  }}catch(e){h=await diag()+(v=="home"?sec("Géneros",genres()):"")}
  el.innerHTML=h;$("#main").scrollTop=0;
@@ -166,7 +166,19 @@ function wav(root,sc,bpm){const sr=22050,d=24,n=sr*d,st=60/bpm/2,p=new Int16Arra
 function demos(){[["Amanecer en el valle",196,[0,2,4,7,9,12],84],["Lluvia de neón",220,[0,3,5,7,10,12],104]].forEach(d=>{const t={id:"x"+d[0],title:d[0],artist:"Demo sintético (no es un artista real)",src:wav(d[1],d[2],d[3])};T[t.id]=t;if(!S.loc.some(x=>x.id==t.id))S.loc.push(t)});show("lib")}
 /* ---------- Eventos ---------- */
 document.addEventListener("click",e=>{  if(e.target.id=="ytplay"){   const raw=$("#yturl").value.trim();   let id="";   try{    const u=new URL(raw);    if(u.hostname=="youtu.be")id=u.pathname.slice(1).split("/")[0];    else if(u.hostname.endsWith("youtube.com"))id=u.searchParams.get("v")||(u.pathname.startsWith("/embed/")?u.pathname.split("/")[2]:"");   }catch{}   if(!/^[A-Za-z0-9_-]{11}$/.test(id)){    toast("Pega un enlace válido de YouTube");    return;   }   $("#ytbox").innerHTML=`<div style="position:relative;width:100%;aspect-ratio:16/9;margin-top:16px"><iframe width="100%" height="100%" src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1" title="Reproductor de YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;inset:0;border:0;border-radius:12px"></iframe></div>`;  }
- if(e.target.id=="ytplay"){
+ if(e.target.id=="bcplay"){
+  const raw=$("#bcurl").value.trim();
+  try{
+    const u=new URL(raw);
+    if(u.hostname!=="bandcamp.com" && !u.hostname.endsWith(".bandcamp.com")){
+      toast("Pega un enlace válido de Bandcamp");
+      return;
+    }
+    $("#bcbox").innerHTML=`<iframe src="${u.origin}/EmbeddedPlayer/album=0/size=large/bgcol=ffffff/linkcol=0687f5/transparent=true/" width="100%" height="472" frameborder="0" allow="autoplay"></iframe>`;
+  }catch{
+    toast("Enlace no válido");
+  }
+}if(e.target.id=="ytplay"){
   const raw=$("#yturl").value.trim();
   let id="";
   try{
